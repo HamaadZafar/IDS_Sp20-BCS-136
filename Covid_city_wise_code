@@ -1,0 +1,27 @@
+import folium
+import pandas as pd
+
+pakistan_balochistan_map = folium.Map(location = [28.4907,65.0958],zoom_start=6,tiles='OpenStreetMap')
+
+from google.colab import drive
+drive.mount('/content/drive')
+
+df = pd.read_csv('/content/drive/My Drive/Colab Notebooks/covid_data_balochistan.csv')
+df
+
+t = 0
+for c in df['Total Cases']:
+  t = int(c)+int(t)
+  for CITIES,lat,long,tc,de in zip(list(df['CITIES']),list(df['LATITUDE']),list(df['LONGITUDE']),list(df['Total Cases']),list(df['Deaths'])):
+    folium.CircleMarker(location = [lat,long],
+                       radius = (tc/t)*100,
+                       color = 'red',
+                       fill = False,
+                       fill_color = 'blue').add_to(pakistan_balochistan_map)
+    xyz = '<strong>State:  ' + CITIES + '</strong><br>' + 'Total Cases: ' + str(tc) + '<br>' + 'Deaths: '+ str(de) + '<br>' 
+    iframe = folium.IFrame(xyz, width=200, height=150)
+    popupData = folium.Popup(iframe, max_width=500)
+    folium.Marker(location = [lat,long], popup=popupData).add_to(pakistan_balochistan_map)
+
+    pakistan_balochistan_map
+    
